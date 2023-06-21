@@ -47,25 +47,28 @@ const InitGame = () => {
     }
 }
 
-const GetColumnsX = (data) => {
+const GetArrayOfTiles = (data,diraction='Left') => {
     const columns = [];
     for(let col=0; col<gameSize; col++) {
-        // columns.push(data.slice(col*gameSize,(col+1)*gameSize)); // get rows
         let column = []
         for(let row=0; row < gameSize; row++) {
-            column.push(data[row*gameSize + col]);
+            let cell = row + col*gameSize;
+            if (diraction == 'Up' || diraction == 'Down') cell = row*gameSize + col;
+            column.push(data[cell]);
         }
-        column = PushZeroToRigth(column);
+        column = PushZeroToRigth(column,diraction);
         columns.push(column);
     }
     return columns;
 }
 
-const PushZeroToRigth = arr => {
-    return arr.filter(a => a > 0).concat(arr.filter(a => a == 0));
+const PushZeroToRigth = (arr,diraction) => {
+    let numbersArry = arr.filter(a => a > 0);
+    if (diraction == 'Down' || diraction == 'Right') numbersArry = numbersArry.reverse();
+    return numbersArry.concat(arr.filter(a => a == 0));
 }
 
-const SumColumnsUp = columns => {
+const SumTiles = (columns,diraction='Up') => {
     const newColumns = [];
     columns.forEach(col => {
         if (col.length>1) {
@@ -77,48 +80,37 @@ const SumColumnsUp = columns => {
                 }
             }
             col = PushZeroToRigth(col);
+            if (diraction == 'Down' || diraction == 'Right') col = col.reverse();
             newColumns.push(col);
         }
     });
     return newColumns;
 }
 
-const ColumnsToArray = columns => {
+const TilesArray2GridArray = (columns, diraction) => {
     const data = [];
     for(let t=0; t<gameSize*gameSize; t++){
-        data.push(columns[t % gameSize][Math.floor(t/gameSize)]);
+        let cellX = Math.floor(t/gameSize); 
+        let cellY = t % gameSize;
+        if (diraction == 'Up' || diraction == 'Down') {
+            cellX = t % gameSize;
+            cellY = Math.floor(t/gameSize);
+        }
+        data.push(columns[cellX][cellY]);
     }
     return data;
 }
 
-const MoveTilesUp = () => {
-    tiles = ColumnsToArray(SumColumnsUp(GetColumnsX(tiles)));
-}
+const CompareStates = (a, b) => a.every((element, index) => element === b[index] );
 
-// const CompareStates = (a, b) => a.every((element, index) => element === b[index] );
-
-const MoveTiles = direction => {
-    switch (directions[direction]) {
-        case 'Up':
-            MoveTilesUp();
-            break;
-        // case 'Right':
-        //     MoveTilesRight();
-        //     break;
-        // case 'Down':
-        //     MoveTilesDown();
-        //     break;
-        // case 'Left':
-        //     MoveTilesLeft();
-        //     break;                
-    }
+const MoveTiles = indexDirection => {
+    const direction = directions[indexDirection]
+    tiles = TilesArray2GridArray(SumTiles(GetArrayOfTiles(tiles,direction),direction),direction);
     const validPosition = GetValidPosition();
-    if (validPosition) {
+    if (validPosition || validPosition === 0) {
         tiles[validPosition] = GetRandom2or4();
         DrawGame();
-    } else {
-        alert('Game Over');
-    }
+    } 
 }
 
 document.addEventListener("DOMContentLoaded", () => {
