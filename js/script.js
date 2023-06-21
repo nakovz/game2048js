@@ -1,8 +1,14 @@
-
 var gameSize = 4;
 var tiles = new Array(gameSize*gameSize).fill(0);
 var directions = ['Up', 'Right', 'Down', 'Left'];
 var score = 0;
+
+const NewGame = nSize => {
+    gameSize = nSize;
+    tiles = new Array(gameSize*gameSize).fill(0);
+    score = 0;
+    InitGame();
+}
 
 const DrawGame = () => {
     const gameBoard = document.querySelector(".game-grid");
@@ -114,12 +120,12 @@ const MoveTiles = indexDirection => {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    InitGame();
+    NewGame(4);
     document.addEventListener("keydown",(event) => {
         const keyMapper = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
         const keyIndex = keyMapper.indexOf(event.code);
         if (keyIndex>=0) {
             MoveTiles(keyIndex);
         }
-    })
+    });
 });

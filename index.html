@@ -7,13 +7,18 @@
     <body>
         <div class="game-container">
             <div class="game-title">
-                <div class="title"><p>2048</p></div>
+                <div class="title"><div>2048</div></div>
                 <div class="score-table">  
                     <div>SCORE</div>
                     <div class="score">0</div>
                 </div>
             </div>
-            <div class="game-info">Join the numbers and get to the <b>2048 tile!</b></div>
+            <div class="game-controls">
+                <div class="new-game" onclick="NewGame(4)">Restart</div>
+            </div>
+            <div class="game-info">
+                <div>Join the numbers and get to the <b>2048 tile!</b></div>
+            </div>
             <div class="game-grid"></div>
         </div>
     </body>
