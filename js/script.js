@@ -47,28 +47,28 @@ const InitGame = () => {
     }
 }
 
-const GetArrayOfTiles = (data,diraction='Left') => {
+const GetArrayOfTiles = (data,direction='Left') => {
     const columns = [];
     for(let col=0; col<gameSize; col++) {
         let column = []
         for(let row=0; row < gameSize; row++) {
             let cell = row + col*gameSize;
-            if (diraction == 'Up' || diraction == 'Down') cell = row*gameSize + col;
+            if (direction == 'Up' || direction == 'Down') cell = row*gameSize + col;
             column.push(data[cell]);
         }
-        column = PushZeroToRigth(column,diraction);
+        column = PushZeroToRigth(column,direction);
         columns.push(column);
     }
     return columns;
 }
 
-const PushZeroToRigth = (arr,diraction) => {
+const PushZeroToRigth = (arr,direction) => {
     let numbersArry = arr.filter(a => a > 0);
-    if (diraction == 'Down' || diraction == 'Right') numbersArry = numbersArry.reverse();
+    if (direction == 'Down' || direction == 'Right') numbersArry = numbersArry.reverse();
     return numbersArry.concat(arr.filter(a => a == 0));
 }
 
-const SumTiles = (columns,diraction='Up') => {
+const SumTiles = (columns,direction='Up') => {
     const newColumns = [];
     columns.forEach(col => {
         if (col.length>1) {
@@ -80,19 +80,19 @@ const SumTiles = (columns,diraction='Up') => {
                 }
             }
             col = PushZeroToRigth(col);
-            if (diraction == 'Down' || diraction == 'Right') col = col.reverse();
+            if (direction == 'Down' || direction == 'Right') col = col.reverse();
             newColumns.push(col);
         }
     });
     return newColumns;
 }
 
-const TilesArray2GridArray = (columns, diraction) => {
+const TilesArray2GridArray = (columns, direction) => {
     const data = [];
     for(let t=0; t<gameSize*gameSize; t++){
         let cellX = Math.floor(t/gameSize); 
         let cellY = t % gameSize;
-        if (diraction == 'Up' || diraction == 'Down') {
+        if (direction == 'Up' || direction == 'Down') {
             cellX = t % gameSize;
             cellY = Math.floor(t/gameSize);
         }
