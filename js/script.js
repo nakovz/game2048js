@@ -10,6 +10,36 @@ const NewGame = nSize => {
     InitGame();
 }
 
+const isGameOver = () => {
+    // Up-Left corner
+    if (tiles[0] === 0) return false;
+    if (tiles[0] === tiles[1]) return false;
+    if (tiles[0] === tiles[gameSize]) return false;
+    // Up-Right corner
+    if (tiles[gameSize-1] === 0) return false;
+    if (tiles[gameSize-1] === tiles[gameSize-2]) return false;
+    if (tiles[gameSize-1] === tiles[2*gameSize-1]) return false;
+    // Down-Rigth corner
+    if (tiles[gameSize*gameSize-1] === 0) return false;
+    if (tiles[gameSize*gameSize-1] === tiles[gameSize*gameSize-2]) return false;
+    if (tiles[gameSize*gameSize-1] === tiles[(gameSize-1)*gameSize-1]) return false;
+    // Down-Left corner
+    if (tiles[(gameSize-1)*gameSize] === 0) return false;
+    if (tiles[(gameSize-1)*gameSize] === tiles[(gameSize-1)*gameSize+1]) return false;
+    if (tiles[(gameSize-1)*gameSize] === tiles[(gameSize-2)*gameSize]) return false;
+    // Check inner grid for neighbor with same value or 0
+    for (let t=gameSize+1; t<(gameSize-1)*gameSize-1; t++){
+        // Do not check edges
+        if ((t+1) % gameSize === 0) t = t+2;
+        if (tiles[t] === 0) return false;
+        if (tiles[t] === tiles[t+1] || tiles[t+1] === 0) return false;
+        if (tiles[t] === tiles[t-1] || tiles[t-1] === 0) return false;
+        if (tiles[t] === tiles[t-gameSize] || tiles[t-gameSize] === 0) return false;
+        if (tiles[t] === tiles[t+gameSize] || tiles[t+gameSize] === 0) return false;
+    }
+    return true;
+}
+
 const DrawGame = () => {
     const gameBoard = document.querySelector(".game-grid");
     let sHtml = '';
@@ -19,6 +49,9 @@ const DrawGame = () => {
     }
     gameBoard.innerHTML = sHtml;
     document.querySelector(".score").innerHTML = score;
+    if(isGameOver()){
+        alert('Game Over!');
+    }
 }
 
 const GetAvailablePositions = () => {
@@ -38,8 +71,8 @@ const GetValidPosition = () => {
 }
 
 const GetRandom2or4 = () => {
-    let randomValue = (Math.floor(Math.random() * 2) + 1) * 2;
-    return randomValue;
+    let randomValue = (Math.floor(Math.random() * 4) + 1);
+    return randomValue < 4 ? 2 : 4;
 }
 
 const InitGame = () => {
@@ -81,6 +114,9 @@ const SumTiles = (columns,direction='Up') => {
             for(let t=0; t<col.length-1; t++) {
                 if (col[t] === col[t+1]) {
                     col[t] = col[t] + col[t+1];
+                    if (col[t] === 2048) {
+                        alert('You Won!');
+                    }
                     score += col[t];
                     col[t+1] = 0;
                 }
@@ -107,16 +143,19 @@ const TilesArray2GridArray = (columns, direction) => {
     return data;
 }
 
-const CompareStates = (a, b) => a.every((element, index) => element === b[index] );
+const CompareTiles = (a, b) => a.every((element, index) => element === b[index] );
 
 const MoveTiles = indexDirection => {
     const direction = directions[indexDirection]
+    const oldTiles = tiles;
     tiles = TilesArray2GridArray(SumTiles(GetArrayOfTiles(tiles,direction),direction),direction);
-    const validPosition = GetValidPosition();
-    if (validPosition || validPosition === 0) {
-        tiles[validPosition] = GetRandom2or4();
-        DrawGame();
-    } 
+    if (!CompareTiles(oldTiles,tiles)) {
+        const validPosition = GetValidPosition();
+        if (validPosition || validPosition === 0) {
+            tiles[validPosition] = GetRandom2or4();
+            DrawGame();
+        } 
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
