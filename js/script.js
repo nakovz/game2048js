@@ -2,11 +2,13 @@ var gameSize = 4;
 var tiles = new Array(gameSize*gameSize).fill(0);
 var directions = ['Up', 'Right', 'Down', 'Left'];
 var score = 0;
+var isThere2048tile = false;
 
 const NewGame = nSize => {
     gameSize = nSize;
     tiles = new Array(gameSize*gameSize).fill(0);
     score = 0;
+    isThere2048tile = false;
     InitGame();
 }
 
@@ -37,6 +39,18 @@ const isGameOver = () => {
         if (tiles[t] === tiles[t-gameSize] || tiles[t-gameSize] === 0) return false;
         if (tiles[t] === tiles[t+gameSize] || tiles[t+gameSize] === 0) return false;
     }
+    //check edges
+    for (let t=1; t<(gameSize-2); t++){
+        if (tiles[t] === 0) return false;
+        if (tiles[t] === tiles[t+1] || tiles[t+1] === 0) return false;
+        if (tiles[(gameSize-1)*gameSize+t] === 0) return false;
+        if (tiles[(gameSize-1)*gameSize+t] === tiles[(gameSize-1)*gameSize+t+1] || tiles[(gameSize-1)*gameSize+t+1] === 0) return false;
+                
+        if (tiles[(t+1)*gameSize-1] === 0) return false;
+        if (tiles[(t+1)*gameSize-1] === tiles[(t+2)*gameSize-1] || tiles[(t+2)*gameSize-1] === 0) return false;
+        if (tiles[t*gameSize] === 0) return false;
+        if (tiles[t*gameSize] === tiles[(t+1)*gameSize] || tiles[(t+1)*gameSize] === 0) return false;        
+    }
     return true;
 }
 
@@ -49,6 +63,9 @@ const DrawGame = () => {
     }
     gameBoard.innerHTML = sHtml;
     document.querySelector(".score").innerHTML = score;
+    if(isThere2048tile){
+        alert("You Won!");
+    }
     if(isGameOver()){
         alert('Game Over!');
     }
@@ -115,7 +132,7 @@ const SumTiles = (columns,direction='Up') => {
                 if (col[t] === col[t+1]) {
                     col[t] = col[t] + col[t+1];
                     if (col[t] === 2048) {
-                        alert('You Won!');
+                        isThere2048tile = true;
                     }
                     score += col[t];
                     col[t+1] = 0;
