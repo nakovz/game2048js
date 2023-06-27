@@ -2,13 +2,14 @@ var gameSize = 4;
 var tiles = new Array(gameSize*gameSize).fill(0);
 var directions = ['Up', 'Right', 'Down', 'Left'];
 var score = 0;
-var isThere2048tile = false;
+var GameGoalTile = 2048;
+var isThereGoalTile = { value: false, messageShow: false };
 
 const NewGame = nSize => {
     gameSize = nSize;
     tiles = new Array(gameSize*gameSize).fill(0);
     score = 0;
-    isThere2048tile = false;
+    isThereGoalTile = { value: false, messageShow: false };
     InitGame();
 }
 
@@ -63,8 +64,9 @@ const DrawGame = () => {
     }
     gameBoard.innerHTML = sHtml;
     document.querySelector(".score").innerHTML = score;
-    if(isThere2048tile){
+    if(isThereGoalTile.value && !isThereGoalTile.messageShow){
         alert("You Won!");
+        isThereGoalTile.messageShow = !isThereGoalTile.messageShow;
     }
     if(isGameOver()){
         alert('Game Over!');
@@ -131,8 +133,8 @@ const SumTiles = (columns,direction='Up') => {
             for(let t=0; t<col.length-1; t++) {
                 if (col[t] === col[t+1]) {
                     col[t] = col[t] + col[t+1];
-                    if (col[t] === 2048) {
-                        isThere2048tile = true;
+                    if (col[t] === GameGoalTile) {
+                        isThereGoalTile.value = true;
                     }
                     score += col[t];
                     col[t+1] = 0;
